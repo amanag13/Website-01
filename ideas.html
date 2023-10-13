@@ -8,8 +8,11 @@
     body {
       background-color: #1a202c;
     }
+    div:empty {
+      display:none;
+    }
   </style>
-  <title>Travel Itinerary</title>
+  <title>Ideas</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
       integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
@@ -63,12 +66,12 @@
       <input type="text" id="modules" class="w-full px-3 py-2 bg-gray-800 rounded-lg mt-1 mb-6">
 
       <button type="button" id="submit-btn" class="bg-blue-600 px-6 py-3 rounded-lg text-white">Plan!</button>
-      <a href="https://api.whatsapp.com/send?phone=918005774604">Whatsapp Us</a>
+      <!-- <a href="https://api.whatsapp.com/send?phone=918005774604">Whatsapp Us</a> -->
     </form>
 
     <div id="output-section" class="text-black mt-6 text-lg" style="background-color: white;padding: 80px;border-radius: 20px;">
-       </div>
-
+    </div>
+       <br>
        <button id="cmd" class="bg-red-600 px-6 py-3 rounded-lg text-white" onclick="generatePdf()">Generate PDF</button>
        
    
@@ -76,8 +79,9 @@
       <a href="#" class="text-blue-400">Made with ❤️ in India</a>
     </footer>
   </div>
-  https://autocomplete.travelpayouts.com/places2?locale=en&types[]=airport&types[]=city&term=lond
+  <!-- https://autocomplete.travelpayouts.com/places2?locale=en&types[]=airport&types[]=city&term=lond -->
  <script>
+
     document.getElementById("submit-btn").onclick = async () => {
       const category = document.getElementById("category").value;
       const platform = document.getElementById("platform").value;
@@ -116,6 +120,33 @@
       if ( category_data == "Branding") {
         console.log(category_data)
         const substitutedPrompt = `act as a brand manager with a 20+ years of experience and write a PRD for designing for ${category}, industry should be ${industry}, complexity - ${complexity}. Don't add budget and stakeholders, this is for a design assignement practice. Give a brand name for that specific industry and mention proper deliverables`;
+        console.log(substitutedPrompt);
+
+        const output = document.getElementById("output-section");
+        output.innerText = "";
+
+        const ws = new WebSocket(`wss://backend.buildpicoapps.com/ask_ai_streaming?app_id=there-son&prompt=${encodeURIComponent(substitutedPrompt)}`);
+        ws.addEventListener("message", (event) => {
+        console.log(event.data);
+        output.innerText = `${output.innerText}${event.data}`;
+        });
+
+        ws.addEventListener("close", (event) => {
+        console.log("Connection closed", event.code, event.reason);
+        if (event.code != 1000) {
+          alert("Oops, we ran into an error. Refresh the page and try again.");
+        }
+        });
+
+        ws.addEventListener("error", (error) => {
+          console.log("WebSocket error", error);
+          alert("Oops, we ran into an error. Refresh the page and try again.");
+        });
+      };
+
+      if (category_data == "Marketing") {
+        console.log(category_data)
+        const substitutedPrompt = `act as a marketer with a 20+ years of experience and write a PRD for Marketing assignment for ${category}, industry should be ${industry}, complexity - ${complexity}. Don't add budget and stakeholders, this is for a marketing assignement practice. Give a brand name for that specific industry and mention proper deliverables`;
         console.log(substitutedPrompt);
 
         const output = document.getElementById("output-section");
