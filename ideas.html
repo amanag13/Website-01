@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #1a202c;
+    }
+  </style>
+  <title>Travel Itinerary</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+      integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body class="text-white">
+  <div class="container mx-auto px-4">
+    <h1 class="text-4xl font-bold pt-8 pb-4">Ideas</h1>
+
+    <form id="travel-form">
+
+      <label for="category" class="block mt-3">Category</label>
+      <select width=300 style="width: 350px" id="category" class="w-full px-3 py-2 bg-gray-800 rounded-lg mt-1">
+        <option value='' selected>Select Category</option>
+        <option value='Branding'>Branding</option>
+        <option value='Marketing'>Marketing</option>
+        <option value='Product/UX'>Product/UX</option>
+      </select>
+
+      <label for="platform" class="block mt-3">Platform</label>
+      <select width=300 style="width: 350px" id="platform" class="w-full px-3 py-2 bg-gray-800 rounded-lg mt-1">
+        <option value='' selected>Select Platform</option>
+        <option value='Health'>Web</option>
+        <option value='Airline'>App</option>
+      </select>
+
+      <label for="industry" class="block mt-3">Industry</label>
+      <select width=300 style="width: 350px" id="industry" class="w-full px-3 py-2 bg-gray-800 rounded-lg mt-1">
+        <option value='' selected>Select Industry</option>
+        <option value='Health'>Health</option>
+        <option value='Airline'>Airline</option>
+        <option value='Entertainment'>Entertainment</option>
+        <option value='Finance'>Finance</option>
+        <option value='Education'>Education</option>
+        <option value='Textile'>Textile</option>
+        <option value='Media and news'>Media and news</option>
+        <option value='Hospitality'>Hospitality</option>
+        <option value='Construction'>Construction</option>
+        <option value='Advertising'>Advertising</option>
+      </select>
+
+      <label for="complexity" class="block mt-3">Complexity</label>
+      <select width=300 style="width: 350px" id="complexity" class="w-full px-3 py-2 bg-gray-800 rounded-lg mt-1">
+        <option value='' selected>Select Complexity</option>
+        <option value='Easy'>Easy</option>
+        <option value='Medium'>Medium</option>
+        <option value='Hard'>Hard</option>
+      </select>
+
+      <label for="modules" class="block mt-3">Modules</label>
+      <input type="text" id="modules" class="w-full px-3 py-2 bg-gray-800 rounded-lg mt-1 mb-6">
+
+      <button type="button" id="submit-btn" class="bg-blue-600 px-6 py-3 rounded-lg text-white">Plan!</button>
+      <a href="https://api.whatsapp.com/send?phone=918005774604">Whatsapp Us</a>
+    </form>
+
+    <div id="output-section" class="text-black mt-6 text-lg" style="background-color: white;padding: 80px;border-radius: 20px;">
+       </div>
+
+       <button id="cmd" class="bg-red-600 px-6 py-3 rounded-lg text-white" onclick="generatePdf()">Generate PDF</button>
+       
+   
+    <footer class="text-center mt-12 mb-4">
+      <a href="#" class="text-blue-400">Made with ❤️ in India</a>
+    </footer>
+  </div>
+  https://autocomplete.travelpayouts.com/places2?locale=en&types[]=airport&types[]=city&term=lond
+ <script>
+    document.getElementById("submit-btn").onclick = async () => {
+      const category = document.getElementById("category").value;
+      const platform = document.getElementById("platform").value;
+      const industry = document.getElementById("industry").value;
+      const complexity = document.getElementById("complexity").value;
+      const modules = document.getElementById("modules").value;
+
+      var category_data = category
+      if ( category_data == "Product/UX") {
+        console.log(category_data)
+        const substitutedPrompt = `act as a product manager with a 20+ years of experience and write a PRD for designing for ${platform}, industry should be ${industry}, complexity - ${complexity}, and modules for ${modules} and with a writen flow of the journey if ${category} is 'Product/UX'. Note: this should be design centric and just for practice, don't go into development/security/privacy/performance related issues.`;
+        console.log(substitutedPrompt);
+
+        const output = document.getElementById("output-section");
+        output.innerText = "";
+
+        const ws = new WebSocket(`wss://backend.buildpicoapps.com/ask_ai_streaming?app_id=there-son&prompt=${encodeURIComponent(substitutedPrompt)}`);
+        ws.addEventListener("message", (event) => {
+        console.log(event.data);
+        output.innerText = `${output.innerText}${event.data}`;
+        });
+
+        ws.addEventListener("close", (event) => {
+        console.log("Connection closed", event.code, event.reason);
+        if (event.code != 1000) {
+          alert("Oops, we ran into an error. Refresh the page and try again.");
+        }
+        });
+
+        ws.addEventListener("error", (error) => {
+          console.log("WebSocket error", error);
+          alert("Oops, we ran into an error. Refresh the page and try again.");
+        });
+      };
+
+      if ( category_data == "Branding") {
+        console.log(category_data)
+        const substitutedPrompt = `act as a brand manager with a 20+ years of experience and write a PRD for designing for ${category}, industry should be ${industry}, complexity - ${complexity}. Don't add budget and stakeholders, this is for a design assignement practice. Give a brand name for that specific industry and mention proper deliverables`;
+        console.log(substitutedPrompt);
+
+        const output = document.getElementById("output-section");
+        output.innerText = "";
+
+        const ws = new WebSocket(`wss://backend.buildpicoapps.com/ask_ai_streaming?app_id=there-son&prompt=${encodeURIComponent(substitutedPrompt)}`);
+        ws.addEventListener("message", (event) => {
+        console.log(event.data);
+        output.innerText = `${output.innerText}${event.data}`;
+        });
+
+        ws.addEventListener("close", (event) => {
+        console.log("Connection closed", event.code, event.reason);
+        if (event.code != 1000) {
+          alert("Oops, we ran into an error. Refresh the page and try again.");
+        }
+        });
+
+        ws.addEventListener("error", (error) => {
+          console.log("WebSocket error", error);
+          alert("Oops, we ran into an error. Refresh the page and try again.");
+        });
+      };
+
+      }
+      
+      
+
+      
+
+
+    window.jsPDF = window.jspdf.jsPDF;
+    function generatePdf() {
+        let jsPdf = new jsPDF('p', 'pt', 'letter');
+        var htmlElement = document.getElementById('output-section');
+        // you need to load html2canvas (and dompurify if you pass a string to html)
+        const opt = {
+            callback: function (jsPdf) {
+                jsPdf.save("Itinerary.pdf");
+                // to open the generated PDF in browser window
+                // window.open(jsPdf.output('bloburl'));
+            },
+            margin: [24, 24, 24, 24],
+            autoPaging: 'text',
+            html2canvas: {
+                allowTaint: true,
+                dpi: 300,
+                letterRendering: true,
+                logging: false,
+                scale: .6
+            }
+        };
+
+    jsPdf.html(htmlElement, opt);
+    }
+  </script>
+  <!-- Existing HTML code ... -->
+  <!-- Add the following script in your HTML file -->
+
+<!-- <script>
+    async function fetchHotelData() {
+      const url =
+        'https://tripadvisor16.p.rapidapi.com/api/v1/hotels/searchHotelsByLocation?latitude=40.730610&longitude=-73.935242&checkIn=2023-08-01&checkOut=2023-07-29&pageNumber=1&currencyCode=INR';
+  
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': '8B9mRrEFf3mshx4Q00F9xgmrXc0op1r6CTijsn2JhKI8TmCk4C',
+          'X-RapidAPI-Host': 'tripadvisor16.p.rapidapi.com',
+        },
+      };
+  
+      try {
+        const response = await fetch(url, options);
+        const result = await response.json(); // Use response.json() instead of response.text()
+        console.log(result);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  
+    // Call the fetchHotelData function
+    fetchHotelData();
+  </script> -->
+  
+
+</body>
+</html>
